@@ -1,4 +1,4 @@
-# GoCardless sample application
+# DNA101 Blog Backend in django
 
 ## Setup
 
