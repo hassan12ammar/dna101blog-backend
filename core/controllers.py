@@ -20,10 +20,8 @@ def signup(request, acount_in: UserIn):
     """
     passwor must contain at least:
     - 8 characters long
-    - one uppercase letter
-    - one lowercase letter
+    - one letter
     - one digit
-    - one special character
     """
     # validadte password
     error_message = password_validator(acount_in.password)
@@ -32,15 +30,15 @@ def signup(request, acount_in: UserIn):
     # check if password1 and password2 are the same
     if acount_in.password1 != acount_in.password2:
         return status.HTTP_400_BAD_REQUEST, MessageOut(detail="passwords do not match")
+    # normalize the data
+    email = acount_in.email.strip().lower().replace(" ", "")
+    # name = acount_in.name.strip().lower().title()
     # check if email is already in use
     if User.objects.filter(email=acount_in.email).exists():
         return status.HTTP_400_BAD_REQUEST, MessageOut(detail="Email is already in use")
-    # normalize the data
-    email = acount_in.email.strip().lower().replace(" ", "")
-    name = acount_in.name.strip().lower().title()
     # create user
     self_user = User.objects.create_user(
-        name=name,
+        # name=name,
         email=email,
         password=acount_in.password1
     )
@@ -49,6 +47,7 @@ def signup(request, acount_in: UserIn):
     
     return status.HTTP_201_CREATED, AuthOut(token=token,
                                              user=self_user)
+
 
 @auth_controller.post("signin", response={
     200: AuthOut,

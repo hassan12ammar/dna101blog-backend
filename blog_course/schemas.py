@@ -1,15 +1,38 @@
-from ninja import schema
+from ninja import Schema
+from typing import Optional
 
-class BlofProfile(schema):
+class BlogProfile(Schema):
     name: str
     title:str
-    img: str
+    img: Optional[str]
 
-class BlogCourseSchema(schema):
-    profile: BlofProfile
+class BlogCourseSchema(Schema):
+    profile: BlogProfile
     title: str
     description: str
     content: str
-    img: str
+    img: Optional[str]
 
 
+# Blog schema
+class BlogSchema(BlogCourseSchema):
+    pass
+
+
+# Course schema
+class CourseSchema(BlogCourseSchema):
+    pass
+
+class BlogIn(BlogCourseSchema):
+    pass
+
+class CourseIn(BlogCourseSchema):
+    pass
+
+class BlogOut(BlogCourseSchema):
+    id: int
+
+class CourseOut(BlogCourseSchema):
+    id: int
+
+ 

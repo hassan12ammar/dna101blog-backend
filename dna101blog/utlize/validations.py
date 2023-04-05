@@ -16,16 +16,14 @@ def password_validator(password: str) -> Union[str, None]:
     if the password is valid it returns None,
     if the password is not valid it returns a string message,.
     It should contain:
-    - at least 8 characters long
-    - at least one uppercase letter
-    - at least one lowercase letter
-    - at least one digit
-    - at least one special character
+    - 8 characters long
+    - one letter
+    - one digit
     """
     if not len(password) >= 8:
         return 'Password is too short (8 characters minimum)'
     # define pattern for password validation 
-    reg = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{6,20}$"      
+    reg = "^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
     # compiling regex
     pattern = re.compile(reg)
     # searching regex

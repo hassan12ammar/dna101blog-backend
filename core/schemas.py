@@ -6,7 +6,6 @@ class MessageOut(Schema):
     detail: str
 
 class UserIn(Schema):
-    name: str
     email: EmailStr
     password1: str = Field(min_length=8)
     password2: str = Field(min_length=8)
@@ -17,7 +16,6 @@ class TokenOut(Schema):
 
 
 class UserOut(Schema):
-    name: str
     email: EmailStr
 
 

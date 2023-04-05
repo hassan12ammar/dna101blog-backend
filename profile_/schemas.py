@@ -1,29 +1,26 @@
 # import libraries
-from typing import List
+from typing import List, Optional
 from ninja import Schema
-from pydantic import EmailStr, Field
-# import files
-from core.schemas import UserOut
+from pydantic import EmailStr
 
 class skillSchema(Schema):
     name: str
 
 
 class ProfileSchema(Schema):
+    name: str
     title: str
-    bio: str = None
-    img: str = None
-    skills: List[skillSchema]
+    bio: Optional[str] = None
+    skills: Optional[List[skillSchema]]
+    img: Optional[str]
 
 
 class ProfileSchemaIn(ProfileSchema):
-    user:  UserOut = Field(alias='user')
+    email: str
 
 
 class ProfileSchemaOut(ProfileSchema):
-    name: str
-    email: EmailStr
-
+    email: str
 
 class ProfileSchemaUpdate(ProfileSchemaIn):
     pass
