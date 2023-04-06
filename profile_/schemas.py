@@ -3,7 +3,7 @@ from typing import List, Optional
 from ninja import Schema
 from pydantic import EmailStr
 
-class skillSchema(Schema):
+class SkillSchema(Schema):
     name: str
 
 
@@ -11,21 +11,22 @@ class ProfileSchema(Schema):
     name: str
     title: str
     bio: Optional[str] = None
-    skills: Optional[List[skillSchema]]
-    img: Optional[str]
+    skills: Optional[List[SkillSchema]]
+    img: Optional[str] = None
 
 
 class ProfileSchemaIn(ProfileSchema):
-    email: str
+    pass
 
 
 class ProfileSchemaOut(ProfileSchema):
-    email: str
+    email: EmailStr
+
 
 class ProfileSchemaUpdate(ProfileSchemaIn):
     pass
 
 
 class ProfileSchemaDelete(Schema):
-    email: EmailStr
+    pass
 

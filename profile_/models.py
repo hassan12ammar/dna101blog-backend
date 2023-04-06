@@ -15,7 +15,7 @@ class Skill(models.Model):
 
 class Profile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, 
+    user = models.OneToOneField(User, on_delete=models.CASCADE, 
                                 related_name='profile_user',
                                 null=False, blank=False)
     # more info 
@@ -26,6 +26,9 @@ class Profile(models.Model):
                             null=True, blank=True)
     skills = models.ManyToManyField(Skill, blank=True, related_name='profile_skills')
 
+    @property
+    def email(self):
+        return self.user.email
 
     def __str__(self):
         return f"{self.name} / {self.user.__str__()}"

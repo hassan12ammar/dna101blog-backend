@@ -24,7 +24,7 @@ def signup(request, acount_in: UserIn):
     - one digit
     """
     # validadte password
-    error_message = password_validator(acount_in.password)
+    error_message = password_validator(acount_in.password1)
     if error_message:
         return status.HTTP_400_BAD_REQUEST, {"detail": error_message}
     # check if password1 and password2 are the same
@@ -32,7 +32,6 @@ def signup(request, acount_in: UserIn):
         return status.HTTP_400_BAD_REQUEST, MessageOut(detail="passwords do not match")
     # normalize the data
     email = acount_in.email.strip().lower().replace(" ", "")
-    # name = acount_in.name.strip().lower().title()
     # check if email is already in use
     if User.objects.filter(email=acount_in.email).exists():
         return status.HTTP_400_BAD_REQUEST, MessageOut(detail="Email is already in use")
@@ -42,7 +41,7 @@ def signup(request, acount_in: UserIn):
         email=email,
         password=acount_in.password1
     )
-
+    # create token for the user
     token = create_token(self_user)
     
     return status.HTTP_201_CREATED, AuthOut(token=token,
@@ -69,21 +68,4 @@ def signin(request, acount_in: SigninIn):
         return status.HTTP_200_OK, AuthOut(token=token, user=user)
 
     return status.HTTP_400_BAD_REQUEST, MessageOut(detail="Wrong password")
-
-
-@auth_controller.delete("delete_user", response={200: MessageOut, 404: MessageOut})
-def delete_user(request, acount_in: SigninIn):
-    # get user
-    # normalize email 
-    email = acount_in.email.strip().lower().replace(" ", "")
-    user = User.objects.filter(email=email).first()
-    # check if user exists
-    if not user:
-        return status.HTTP_404_NOT_FOUND, MessageOut(detail="User not found")
-    # authenticate user
-    signin(request, acount_in)
-    # delete user
-    user.delete()
-    return status.HTTP_200_OK, MessageOut(detail="User deleted successfully")
-
 
