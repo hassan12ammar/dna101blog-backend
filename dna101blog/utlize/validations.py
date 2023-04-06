@@ -58,14 +58,14 @@ def get_user(email: str) -> Union[CustomUser, Error]:
 def get_user_profile(email: str) -> Union[Profile, Error]:
     """
     - check if user exists
-    - check if profile already exists
+    - check if profile exists
     . return profile if no error, 
     . return Error(http status, message dictionary) if error
     """
     try:
         # try to get user & profile
-        user = User.objects.filter(email=email).select_related("profile_user").first()
-        profile = user.profile_user
+        user = User.objects.filter(email=email).select_related('profile_user').first()
+        user_profile = user.profile_user
     except AttributeError as e:
         # check if user not exists
         if e.args[0] == "'NoneType' object has no attribute 'profile_user'":
@@ -75,4 +75,6 @@ def get_user_profile(email: str) -> Union[Profile, Error]:
         if e.args[0] == "CustomUser has no profile_user.":
             # return (http status, message dictionary)
             return Error(status.HTTP_404_NOT_FOUND, MessageOut(detail="Profile not found"))
-    return profile
+
+        return Error(status.HTTP_400_BAD_REQUEST, MessageOut(detail=e.args[0]))
+    return user_profile
