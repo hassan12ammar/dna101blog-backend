@@ -1,6 +1,5 @@
 from django.contrib import admin
-from blog_course.models import Blog, Course
+from blog_course.models import Content
 
 # Register models.
-admin.site.register(Blog)
-admin.site.register(Course)
+admin.site.register(Content)

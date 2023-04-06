@@ -1,13 +1,24 @@
-from ninja import Schema
+from ninja import Schema, Field
 from typing import Optional
 
-class BlogProfile(Schema):
+
+class ContentProfile(Schema):
     name: str
     title:str
     img: Optional[str]
 
-class BlogCourseSchema(Schema):
-    profile: BlogProfile
+
+class ContentSchema(Schema):
+    title: str
+    description: str
+    content: str
+    img: Optional[str]
+
+class ContentIn(ContentSchema):
+    pass
+
+class ContentOut(Schema):
+    profile: ContentProfile
     title: str
     description: str
     content: str
@@ -15,24 +26,23 @@ class BlogCourseSchema(Schema):
 
 
 # Blog schema
-class BlogSchema(BlogCourseSchema):
+class BlogSchema(ContentSchema):
     pass
 
-
-# Course schema
-class CourseSchema(BlogCourseSchema):
+class BlogIn(ContentSchema):
     pass
 
-class BlogIn(BlogCourseSchema):
-    pass
-
-class CourseIn(BlogCourseSchema):
-    pass
-
-class BlogOut(BlogCourseSchema):
+class BlogOut(ContentOut):
     id: int
 
-class CourseOut(BlogCourseSchema):
+# Course schema
+class CourseSchema(ContentSchema):
+    pass
+
+class CourseIn(ContentSchema):
+    pass
+
+class CourseOut(ContentOut):
     id: int
 
  
