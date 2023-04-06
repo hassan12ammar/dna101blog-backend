@@ -21,8 +21,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # jazmin has to be on top
     'jazzmin',
-    # 
+    # defualt Apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -33,7 +34,7 @@ INSTALLED_APPS = [
     'core',
     'blog_course',
     'profile_',
-    # Third-party apps
+    # Third-party Apps
     'rest_framework',
 ]
 
