@@ -1,18 +1,30 @@
-# DNA101 Blog Backend in django
+# DNA101 Blog API
+DNA101 Blog is a web application that allows users to create and share blogs and courses on various topics related to BioMedical Informatics.
+
+## Technologies
+The following technologies were used in this project:
+
+* Django
+* Ninja Framework
+* Django REST Framework
+* SQLite
+* JWT Authentication
 
 ## Setup
 
-The first thing to do is to clone the repository:
+To run this project, you will need Python 3.x and pip installed.
+
+### Clone the repository:
 
 ```sh
-git clone [Repo URL]
+git clone https://github.com/hassan12ammar/dna101blog-backend.git
 ```
 
 ```sh
-cd dna101blog
+cd dna101blog-backend
 ```
 
-### Create a virtual environment to install dependencies in and activate it:
+### Create a virtual environment and activate it:
 
 ```sh
 python -m venv dna101blog_venv
@@ -22,30 +34,28 @@ python -m venv dna101blog_venv
 source dna101blog_venv/bin/activate
 ```
 
-#### if you use fish
+#### if you use **fish**
 
 ```sh
-source dna101blog_venv/bin/activate.fish
+$ source dna101blog_venv/bin/activate.fish
 ```
 
-### Then install the dependencies:
+### Install dependencies:
 
 ```sh
 pip install -r requirements.txt
 ```
 
-### Once `pip` has finished downloading the dependencies:
-```sh
-python manage.py makemigrations
-```
+### Run migrations:
+
 ```sh
 python manage.py migrate
 ```
 
 ### runserver to start the project
+
 ```sh
 python manage.py runserver
 ```
 
-And navigate to `http://127.0.0.1:8000/admin`.
 
