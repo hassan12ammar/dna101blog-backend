@@ -6,7 +6,6 @@ The following technologies were used in this project:
 
 * Django
 * Ninja Framework
-* Django REST Framework
 * SQLite
 * JWT Authentication
 
