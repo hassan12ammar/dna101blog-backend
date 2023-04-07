@@ -38,6 +38,8 @@ def get_user(email: str) -> Union[CustomUser, Error]:
     """
     - check if user exists
     - check if profile already exists
+    . return profile if no error, 
+    . return Error(http status, message dictionary) if error 404, or 400
     """
     try:
         # try to get user & profile
@@ -60,7 +62,7 @@ def get_user_profile(email: str) -> Union[Profile, Error]:
     - check if user exists
     - check if profile exists
     . return profile if no error, 
-    . return Error(http status, message dictionary) if error
+    . return Error(http status, message dictionary) if error 404, or 400
     """
     try:
         # try to get user & profile

@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # local Apps
     'core',
-    'blog_course',
+    'content',
     'profile_',
     # Third-party Apps
     'rest_framework',

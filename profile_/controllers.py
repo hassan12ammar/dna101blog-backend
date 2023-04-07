@@ -1,54 +1,37 @@
-# import libraries
+# built-in imports
 from typing import List
+# third-party imports
 from ninja import Router
 from rest_framework import status
 from django.contrib.auth import get_user_model
-# import files
-# import models
-from profile_.models import Profile, Skill
-# import schemas
-from core.schemas import MessageOut #, UserOut
-from profile_.schemas import ProfileSchemaIn, ProfileSchemaOut, SkillSchema
-# import functions
-from dna101blog.utlize.validations import get_user_profile
-# import custom classes
+# local imports
+from .models import Profile, Skill
+from core.schemas import MessageOut
 from core.authrztion import CustomAuth
 from dna101blog.utlize.custom_class import Error
+from dna101blog.utlize.validations import get_user_profile
+from .schemas import ProfileSchemaIn, ProfileSchemaOut, SkillSchema
 
 # set variables
 User = get_user_model()
 profile_controller = Router()
 
-"""
-@profile_controller.get("get_all_users", response={
-    200: List[UserOut],
-    404: MessageOut,
-    })
-def get_all_users(request):
-    users = User.objects.all()
-    if users:
-        return status.HTTP_200_OK, users
-    return status.HTTP_404_NOT_FOUND, MessageOut(detail="No users found")
 
-@profile_controller.get("all_profile", response={200: List[ProfileSchemaOut],
-                                                 404: MessageOut,})
+@profile_controller.get("get_all_profile", response={200: List[ProfileSchemaOut],},)
 def all_profile(request):
-    # get all profiles
-    profiles = Profile.objects.all().select_related('user')
-    # check if profile is not empty
-    if profiles:
-        return status.HTTP_200_OK, profiles
-
-    return status.HTTP_404_NOT_FOUND, MessageOut(detail="No profile found")
-"""
+    return status.HTTP_200_OK, Profile.objects.all().select_related('user')
 
 
-@profile_controller.post("create_skill/{name}",
+@profile_controller.post("create_skill/{skill_name}",
                          response={200: SkillSchema,},
                         auth=CustomAuth(),
                         )
 def create_skill(request, skill_name):
-    return Skill.objects.get_or_create(name=skill_name)[0]
+    return status.HTTP_200_OK, Skill.objects.get_or_create(name=skill_name)[0]
+
+@profile_controller.get("get_all_skills", response={200: List[SkillSchema],},)
+def get_all_skill(request):
+    return status.HTTP_200_OK, Skill.objects.all()
 
 
 @profile_controller.get("get_profile", 
@@ -60,7 +43,7 @@ def create_skill(request, skill_name):
                         auth=CustomAuth(),
                         )
 def get_profile(request):
-    # normailze email
+    # get email from auth request
     email = request.auth
 
     # check if user and profile exists
@@ -78,7 +61,7 @@ def get_profile(request):
                         auth=CustomAuth(),
                         )
 def create_profile(request, profile_in:ProfileSchemaIn):
-    # normalize email
+    # get email from auth request
     email = request.auth
 
     # get the user instance
@@ -104,11 +87,11 @@ def create_profile(request, profile_in:ProfileSchemaIn):
               for skill in profile_in.skills]
 
     profile.skills.add(*skills)
+    # save all changes
     profile.save()
 
     # create response
     project_dict = profile.__dict__
-    # project_dict["name"] = profile.name
     project_dict["email"] = profile.user.email
     project_dict["img"] = str(project_dict["img"])
 
@@ -120,11 +103,12 @@ def create_profile(request, profile_in:ProfileSchemaIn):
 @profile_controller.put("edit_profile",
                          response={200: ProfileSchemaOut, 
                                    404: MessageOut,
+                                   400: MessageOut,
                                    },
                          auth=CustomAuth(),
                          )
 def edit_profile(request, profile_in: ProfileSchemaIn):
-    # Get the user's email
+    # get email from auth request
     email = request.auth
 
     # Check if user profile exists
@@ -141,8 +125,9 @@ def edit_profile(request, profile_in: ProfileSchemaIn):
     # add many-to-many field skills
     skills = [Skill.objects.get_or_create(name=skill.name)[0] 
               for skill in profile_in.skills]
-
     profile.skills.set(skills)
+
+    # save all changes
     profile.save()
 
     return status.HTTP_200_OK, profile

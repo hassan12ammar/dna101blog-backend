@@ -1,4 +1,4 @@
-from ninja import Schema, Field
+from ninja import Schema
 from typing import Optional
 
 
@@ -32,6 +32,9 @@ class BlogSchema(ContentSchema):
 class BlogIn(ContentSchema):
     pass
 
+class BlogEdit(ContentSchema):
+    id:int
+
 class BlogOut(ContentOut):
     id: int
 
@@ -41,6 +44,9 @@ class CourseSchema(ContentSchema):
 
 class CourseIn(ContentSchema):
     pass
+
+class CourseEdit(ContentSchema):
+    id: int
 
 class CourseOut(ContentOut):
     id: int

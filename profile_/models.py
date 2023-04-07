@@ -1,7 +1,7 @@
-# import libraries
-from django.db import models
+# libraries import
 import uuid
-# import my files
+from django.db import models
+# local import
 from django.contrib.auth import get_user_model
 
 User = get_user_model()

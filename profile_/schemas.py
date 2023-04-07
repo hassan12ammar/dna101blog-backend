@@ -1,7 +1,7 @@
 # import libraries
-from typing import List, Optional
 from ninja import Schema
 from pydantic import EmailStr
+from typing import List, Optional
 
 class SkillSchema(Schema):
     name: str

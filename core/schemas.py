@@ -1,5 +1,5 @@
-from pydantic import EmailStr, Field
 from ninja import Schema
+from pydantic import EmailStr, Field
 
 
 class MessageOut(Schema):
