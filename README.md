@@ -48,7 +48,14 @@ pip install -r requirements.txt
 ### Run migrations:
 
 ```sh
+python manage.py makemigrations
+```
+```sh
 python manage.py migrate
+```
+### create a superuser to have access to the admin panel 
+```sh
+python manage.py createsuperuser
 ```
 
 ### runserver to start the project
@@ -56,5 +63,3 @@ python manage.py migrate
 ```sh
 python manage.py runserver
 ```
-
-
