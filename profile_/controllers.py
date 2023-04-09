@@ -1,9 +1,12 @@
 # built-in imports
-from typing import List
+import base64
+import os
+from typing import List, Optional
 # third-party imports
-from ninja import Router
+from ninja import File, Router, UploadedFile
 from rest_framework import status
 from django.contrib.auth import get_user_model
+from django.core.files.base import ContentFile
 # local imports
 from .models import Profile, Skill
 from core.schemas import MessageOut
@@ -57,10 +60,11 @@ def get_profile(request):
 @profile_controller.post("create_profile",
                          response={200: ProfileSchemaOut, 
                                    404: MessageOut,
+                                   400: MessageOut,
                                    },
                         auth=CustomAuth(),
                         )
-def create_profile(request, profile_in:ProfileSchemaIn):
+def create_profile(request, profile_in:ProfileSchemaIn): # , img:Optional[UploadedFile]=File(None)):
     # get email from auth request
     email = request.auth
 
@@ -80,8 +84,16 @@ def create_profile(request, profile_in:ProfileSchemaIn):
         name=profile_in.name,
         title=profile_in.title,
         bio=profile_in.bio,
-        img=profile_in.img,
+        img=profile_in.img
     )
+
+    # Save profile picture if provided
+    if profile_in.img:
+        image_data = base64.b64decode(profile_in.img)
+        profile.img.save('profile.jpg', ContentFile(image_data))
+    else:
+        profile.img = profile_in.img
+
     # add many-to-many field skills
     skills = [Skill.objects.get_or_create(name=skill.name)[0] 
               for skill in profile_in.skills]
@@ -105,9 +117,9 @@ def create_profile(request, profile_in:ProfileSchemaIn):
                                    404: MessageOut,
                                    400: MessageOut,
                                    },
-                         auth=CustomAuth(),
-                         )
-def edit_profile(request, profile_in: ProfileSchemaIn):
+                        auth=CustomAuth(),
+                        )
+def edit_profile(request, profile_in: ProfileSchemaIn): # , img:Optional[UploadedFile]=File(None)):
     # get email from auth request
     email = request.auth
 
@@ -121,6 +133,15 @@ def edit_profile(request, profile_in: ProfileSchemaIn):
     profile.title = profile_in.title
     profile.bio = profile_in.bio
     profile.img = profile_in.img
+    
+    # Save new profile picture if provided
+    if profile_in.img:
+        image_data = base64.b64decode(profile_in.img)
+        # remove old img
+        if profile.img:
+            os.remove(profile.img.path)
+
+        profile.img.save('profile.jpg', ContentFile(image_data))
 
     # add many-to-many field skills
     skills = [Skill.objects.get_or_create(name=skill.name)[0] 
@@ -131,5 +152,4 @@ def edit_profile(request, profile_in: ProfileSchemaIn):
     profile.save()
 
     return status.HTTP_200_OK, profile
-
 

@@ -1,9 +1,11 @@
 # built-in imports
+import base64
 from typing import List
 # third-party imports
 from ninja import Router
 from typing import Union
 from rest_framework import status
+from django.core.files.base import ContentFile
 # local imports
 from .models import Content
 from core.schemas import MessageOut
@@ -73,10 +75,16 @@ def create_content(email, title, description, content, img, content_type) -> Uni
         title=title,
         description=description,
         content=content,
-        img=img,
         content_type=content_type,
     )
-    
+
+    # Save content picture if provided
+    if img:
+        image_data = base64.b64decode(img)
+        img.save('profile.jpg', ContentFile(image_data))
+    else:
+        content_.img = img
+
     return content_
 
 
@@ -96,7 +104,7 @@ def create_blog(request, blog_in: BlogIn):
                           blog_in.content, 
                           blog_in.img, 
                           Content.TypeChoices.BLOG)
-    
+
     if isinstance(blog, Error):
         return blog.status, blog.message
 
@@ -150,7 +158,12 @@ def edit_content(id, email, title, description, content, img, content_type) -> U
     content_.title = title
     content_.description = description
     content_.content = content
-    content_.img = img
+    
+    # Save content picture if provided
+    if img:
+        image_data = base64.b64decode(img)
+        img.save('profile.jpg', ContentFile(image_data))
+
     # save the changes
     content_.save()
 
