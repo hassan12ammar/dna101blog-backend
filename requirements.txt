@@ -1,5 +1,4 @@
 asgiref==3.6.0
-backports.zoneinfo==0.2.1
 Django==4.2
 django-jazzmin==2.6.0
 django-ninja==0.21.0
