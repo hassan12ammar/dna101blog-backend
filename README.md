@@ -12,7 +12,6 @@ The website is built with Django and uses NinjaAPI to handle the RESTful API. Th
 * Authentication and authorization using JWT
 * RESTful API for data management
 * Admin panel with friendly interface
-<br> <br>
 
 # Installation and Setup
 
@@ -52,8 +51,6 @@ To access the admin panel, you will need to create a superuser first:
 python manage.py createsuperuser
 ```
 
-<br>
-
 # API Documentation
 API documentation is available at http://localhost:8000/api/docs. You can use the Swagger UI to explore the API and test endpoints.
 <br>
@@ -65,8 +62,6 @@ By defualt the first_start.sh will create a superuser with:
 
 Email: **mg@gm.com**
 Password: **string12**
-
-<br><br>
 
 # License
 This project is licensed under the MIT License. Feel free to use and modify it as per your requirements.
