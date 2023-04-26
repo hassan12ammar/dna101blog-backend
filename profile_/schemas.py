@@ -12,7 +12,6 @@ class ProfileSchema(Schema):
     title: str
     bio: Optional[str] = None
     skills: Optional[List[SkillSchema]]
-    img: Optional[str] = None
 
 
 class ProfileSchemaIn(ProfileSchema):
@@ -20,7 +19,12 @@ class ProfileSchemaIn(ProfileSchema):
 
 
 class ProfileSchemaOut(ProfileSchema):
+    img: Optional[str] = None
     email: EmailStr
+    
+    @staticmethod
+    def resolve_email(self):
+        return self.user.email
 
 
 class ProfileSchemaUpdate(ProfileSchemaIn):

@@ -1,18 +1,17 @@
 # built-in imports
-import base64
 import os
-from typing import List, Optional
+from typing import List
+from uuid import uuid4
 # third-party imports
-from ninja import File, Router, UploadedFile
 from rest_framework import status
 from django.contrib.auth import get_user_model
-from django.core.files.base import ContentFile
+from ninja import Body, File, Router, UploadedFile
 # local imports
 from .models import Profile, Skill
 from core.schemas import MessageOut
 from core.authrztion import CustomAuth
 from dna101blog.utlize.custom_class import Error
-from dna101blog.utlize.validations import get_user_profile
+from dna101blog.utlize.validations import get_user_profile, normalize_email
 from .schemas import ProfileSchemaIn, ProfileSchemaOut, SkillSchema
 
 # set variables
@@ -47,7 +46,7 @@ def get_all_skill(request):
                         )
 def get_profile(request):
     # get email from auth request
-    email = request.auth
+    email = normalize_email(request.auth)
 
     # check if user and profile exists
     profile = get_user_profile(email)
@@ -64,9 +63,9 @@ def get_profile(request):
                                    },
                         auth=CustomAuth(),
                         )
-def create_profile(request, profile_in:ProfileSchemaIn): # , img:Optional[UploadedFile]=File(None)):
+def create_profile(request, profile_in:ProfileSchemaIn, img: UploadedFile=None):
     # get email from auth request
-    email = request.auth
+    email = normalize_email(request.auth)
 
     # get the user instance
     try:
@@ -84,15 +83,12 @@ def create_profile(request, profile_in:ProfileSchemaIn): # , img:Optional[Upload
         name=profile_in.name,
         title=profile_in.title,
         bio=profile_in.bio,
-        img=profile_in.img
     )
 
-    # Save profile picture if provided
-    if profile_in.img:
-        image_data = base64.b64decode(profile_in.img)
-        profile.img.save('profile.jpg', ContentFile(image_data))
-    else:
-        profile.img = profile_in.img
+    # Save profile picture
+    if img:
+        profile.img.save(f'profile-{profile.id}-{uuid4()}.jpg', img)
+    else: profile.img=img
 
     # add many-to-many field skills
     skills = [Skill.objects.get_or_create(name=skill.name)[0] 
@@ -102,14 +98,7 @@ def create_profile(request, profile_in:ProfileSchemaIn): # , img:Optional[Upload
     # save all changes
     profile.save()
 
-    # create response
-    project_dict = profile.__dict__
-    project_dict["email"] = profile.user.email
-    project_dict["img"] = str(project_dict["img"])
-
-    profile_out = ProfileSchemaOut(**project_dict)
-
-    return status.HTTP_200_OK, profile_out
+    return status.HTTP_200_OK, profile
 
 
 @profile_controller.put("edit_profile",
@@ -119,9 +108,9 @@ def create_profile(request, profile_in:ProfileSchemaIn): # , img:Optional[Upload
                                    },
                         auth=CustomAuth(),
                         )
-def edit_profile(request, profile_in: ProfileSchemaIn): # , img:Optional[UploadedFile]=File(None)):
+def edit_profile(request, profile_in: ProfileSchemaIn=Body(...), img: UploadedFile=File(None)):
     # get email from auth request
-    email = request.auth
+    email = normalize_email(request.auth)
 
     # Check if user profile exists
     profile = get_user_profile(email)
@@ -133,15 +122,14 @@ def edit_profile(request, profile_in: ProfileSchemaIn): # , img:Optional[Uploade
     profile.title = profile_in.title
     profile.bio = profile_in.bio
     profile.img = profile_in.img
-    
+
     # Save new profile picture if provided
-    if profile_in.img:
-        image_data = base64.b64decode(profile_in.img)
+    if img:
         # remove old img
         if profile.img:
             os.remove(profile.img.path)
-
-        profile.img.save('profile.jpg', ContentFile(image_data))
+        # profile.img = img
+        profile.img.save(f'profile-{profile.id}-{uuid4()}.jpg', img)
 
     # add many-to-many field skills
     skills = [Skill.objects.get_or_create(name=skill.name)[0] 

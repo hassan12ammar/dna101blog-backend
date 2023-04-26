@@ -1,33 +1,62 @@
 # built-in imports
-import base64
+import os
 from typing import List
+from uuid import uuid4
 # third-party imports
-from ninja import Router
+from ninja import Body, File, Router, UploadedFile
 from typing import Union
 from rest_framework import status
 from django.core.files.base import ContentFile
+
+from dna101blog.utlize.constant import CONTENT_PER_PAGE
 # local imports
 from .models import Content
 from core.schemas import MessageOut
 from core.authrztion import CustomAuth
 from dna101blog.utlize.custom_class import Error
-from dna101blog.utlize.validations import get_user_profile
+from dna101blog.utlize.validations import get_user_profile, normalize_email
 from .schemas import BlogIn, BlogOut, CourseIn, CourseOut, BlogEdit, CourseEdit
 
 
 blog_router = Router()
 course_router = Router()
 
-@blog_router.get("/get_all_blogs", response={200: List[BlogOut]})
-def list_blogs(request):
-    blogs = list(Content.objects.filter(content_type=Content.TypeChoices.BLOG))
+@blog_router.get("/get_all_blogs/{page_number}", 
+                 response={
+                       200: List[BlogOut],
+                       400: MessageOut
+                       })
+def list_blogs(request, page_number:int):
+    # validate page number
+    if page_number <= 0:
+        return status.HTTP_400_BAD_REQUEST, MessageOut(
+                detail="Invalid page number Has to be grater than 0")
+
+    start = (page_number - 1) * CONTENT_PER_PAGE
+    end = start + CONTENT_PER_PAGE
+
+    blogs = Content.objects.filter(content_type=Content.TypeChoices.BLOG
+            ).order_by("id")[start:end]
 
     return status.HTTP_200_OK, blogs
 
 
-@course_router.get("/get_all_courses", response={200: List[BlogOut]})
-def list_courses(request):
-    courses = list(Content.objects.filter(content_type=Content.TypeChoices.COURSE))
+@course_router.get("/get_all_courses/{page_number}", 
+                   response={
+                       200: List[BlogOut],
+                       400: MessageOut
+                       })
+def list_courses(request, page_number:int):
+    # validate page number
+    if page_number <= 0:
+        return status.HTTP_400_BAD_REQUEST, MessageOut(
+                detail="Invalid page number Has to be grater than 0")
+
+    start = (page_number - 1) * CONTENT_PER_PAGE
+    end = start + CONTENT_PER_PAGE
+
+    courses = Content.objects.filter(content_type=Content.TypeChoices.COURSE
+              ).order_by("id")[start:end]
 
     return status.HTTP_200_OK, courses
 
@@ -80,10 +109,8 @@ def create_content(email, title, description, content, img, content_type) -> Uni
 
     # Save content picture if provided
     if img:
-        image_data = base64.b64decode(img)
-        img.save('profile.jpg', ContentFile(image_data))
-    else:
-        content_.img = img
+        content_.img.save(f'{content_type}-{title}-{uuid4()}.jpg', img)
+    else: content_.img=img
 
     return content_
 
@@ -96,13 +123,13 @@ def create_content(email, title, description, content, img, content_type) -> Uni
                     },
                 auth=CustomAuth(),
                 )
-def create_blog(request, blog_in: BlogIn):
+def create_blog(request, blog_in: BlogIn=Body(...), img: UploadedFile=File(None)):
 
-    email = request.auth
+    email = normalize_email(request.auth)
     blog = create_content(email, blog_in.title, 
                           blog_in.description, 
                           blog_in.content, 
-                          blog_in.img, 
+                          img, 
                           Content.TypeChoices.BLOG)
 
     if isinstance(blog, Error):
@@ -119,13 +146,13 @@ def create_blog(request, blog_in: BlogIn):
                     },
                 auth=CustomAuth(),
                 )
-def create_course(request, course_in: CourseIn):
+def create_course(request, course_in: CourseIn=Body(...), img: UploadedFile=File(None)):
 
-    email = request.auth
+    email = normalize_email(request.auth)
     course = create_content(email, course_in.title, 
                           course_in.description, 
                           course_in.content, 
-                          course_in.img, 
+                          img, 
                           Content.TypeChoices.COURSE)
 
     if isinstance(course, Error):
@@ -161,8 +188,11 @@ def edit_content(id, email, title, description, content, img, content_type) -> U
     
     # Save content picture if provided
     if img:
-        image_data = base64.b64decode(img)
-        img.save('profile.jpg', ContentFile(image_data))
+        # remove old img
+        if img:
+            os.remove(content_.img.path)
+        # profile.img = img
+        content_.img.save(f'{content_type}-{title}-{uuid4()}.jpg', img)
 
     # save the changes
     content_.save()
@@ -178,13 +208,13 @@ def edit_content(id, email, title, description, content, img, content_type) -> U
                     },
                 auth=CustomAuth(),
                 )
-def edit_blog(request, blog_in: BlogEdit):
+def edit_blog(request, blog_in: BlogEdit=Body(...), img: UploadedFile=File(None)):
 
-    email = request.auth
+    email = normalize_email(request.auth)
     blog = edit_content(blog_in.id, email, blog_in.title, 
                           blog_in.description, 
                           blog_in.content, 
-                          blog_in.img, 
+                          img, 
                           Content.TypeChoices.BLOG)
 
     if isinstance(blog, Error):
@@ -201,13 +231,13 @@ def edit_blog(request, blog_in: BlogEdit):
                     },
                 auth=CustomAuth(),
                 )
-def edit_course(request, course_in: CourseEdit):
+def edit_course(request, course_in: CourseEdit=Body(...), img: UploadedFile=File(None)):
 
-    email = request.auth
+    email = normalize_email(request.auth)
     course = edit_content(course_in.id, email, course_in.title, 
                           course_in.description, 
                           course_in.content, 
-                          course_in.img, 
+                          img, 
                           Content.TypeChoices.COURSE)
 
     if isinstance(course, Error):

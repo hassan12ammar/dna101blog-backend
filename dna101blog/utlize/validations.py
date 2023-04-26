@@ -1,12 +1,12 @@
-from django.contrib.auth import get_user_model
-from rest_framework import status
-from typing import Union
 import re
-# 
-from dna101blog.utlize.custom_class import Error
-from core.schemas import MessageOut
+from typing import Union
+from rest_framework import status
+from django.contrib.auth import get_user_model
 from core.models import CustomUser
+# local models
 from profile_.models import Profile
+from core.schemas import MessageOut
+from dna101blog.utlize.custom_class import Error
 
 User = get_user_model()
 
@@ -19,19 +19,21 @@ def password_validator(password: str) -> Union[str, None]:
     - 8 characters long
     - one letter
     - one digit
+    pattern(at_least(8), one_ore_more(letter), one_ore_more(digit))
     """
     if not len(password) >= 8:
         return 'Password is too short (8 characters minimum)'
     # define pattern for password validation 
-    reg = "^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
+    # Define the regex
+    reg = "^(?=.*[A-Za-z])(?=.*\d).{8,}$"
     # compiling regex
     pattern = re.compile(reg)
     # searching regex
     is_match = re.search(pattern, password)
     # raising error if password is not valid
     if not is_match:
-        return 'Password must contain at least one uppercase letter, \
-            one lowercase letter, one number and one special character'
+        return 'Password must be at least 8 characters long, with and one letter, and one number'
+
     return None
 
 def get_user(email: str) -> Union[CustomUser, Error]:
@@ -80,3 +82,8 @@ def get_user_profile(email: str) -> Union[Profile, Error]:
 
         return Error(status.HTTP_400_BAD_REQUEST, MessageOut(detail=e.args[0]))
     return user_profile
+
+
+def normalize_email(email:str) -> str:
+    """ normalize email """
+    return email.strip().lower().replace(" ", "")

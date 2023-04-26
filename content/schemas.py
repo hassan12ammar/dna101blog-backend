@@ -12,16 +12,12 @@ class ContentSchema(Schema):
     title: str
     description: str
     content: str
-    img: Optional[str]
 
 class ContentIn(ContentSchema):
     pass
 
-class ContentOut(Schema):
+class ContentOut(ContentSchema):
     profile: ContentProfile
-    title: str
-    description: str
-    content: str
     img: Optional[str]
 
 
