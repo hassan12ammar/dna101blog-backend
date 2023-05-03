@@ -1,6 +1,7 @@
 from ninja import Schema
 from pydantic import EmailStr, Field
 
+from profile_.models import Profile
 
 class MessageOut(Schema):
     detail: str
@@ -19,6 +20,10 @@ class TokenOut(Schema):
 class UserOut(Schema):
     email: EmailStr
     name: str
+    
+    @staticmethod
+    def resolve_name(self):
+        return Profile.objects.get(user=self).name
 
 
 class AuthOut(Schema):
