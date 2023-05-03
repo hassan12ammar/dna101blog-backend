@@ -15,7 +15,7 @@ from core.schemas import MessageOut
 from core.authrztion import CustomAuth
 from dna101blog.utlize.custom_class import Error
 from dna101blog.utlize.validations import get_user_profile, normalize_email
-from .schemas import BlogIn, BlogOut, CourseIn, CourseOut, BlogEdit, CourseEdit
+from .schemas import BlogIn, BlogOut, BlogShort, CourdeShort, CourseIn, CourseOut, BlogEdit, CourseEdit
 
 
 blog_router = Router()
@@ -23,7 +23,7 @@ course_router = Router()
 
 @blog_router.get("/get_all_blogs/{page_number}", 
                  response={
-                       200: List[BlogOut],
+                       200: List[BlogShort],
                        400: MessageOut
                        })
 def list_blogs(request, page_number:int):
@@ -43,7 +43,7 @@ def list_blogs(request, page_number:int):
 
 @course_router.get("/get_all_courses/{page_number}", 
                    response={
-                       200: List[BlogOut],
+                       200: List[CourdeShort],
                        400: MessageOut
                        })
 def list_courses(request, page_number:int):

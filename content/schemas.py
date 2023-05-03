@@ -12,13 +12,20 @@ class ContentSchema(Schema):
     title: str
     description: str
     content: str
+    img: Optional[str]
 
 class ContentIn(ContentSchema):
     pass
 
-class ContentOut(ContentSchema):
+class Contentshort(Schema):
+    id: int
     profile: ContentProfile
     img: Optional[str]
+    title: str
+    description: str
+
+class ContentOut(Contentshort):
+    content: str
 
 
 # Blog schema
@@ -31,14 +38,21 @@ class BlogIn(ContentSchema):
 class BlogEdit(ContentSchema):
     id:int
 
+class BlogShort(Contentshort):
+    pass
+
 class BlogOut(ContentOut):
     id: int
+
 
 # Course schema
 class CourseSchema(ContentSchema):
     pass
 
 class CourseIn(ContentSchema):
+    pass
+
+class CourdeShort(Contentshort):
     pass
 
 class CourseEdit(ContentSchema):
