@@ -11,9 +11,9 @@ class Content(models.Model):
 
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
-    title = models.fields.CharField(max_length=25)
+    title = models.fields.CharField(max_length=500)
     description = models.fields.CharField(max_length=150)
-    content = models.fields.CharField(max_length=2500)
+    content = models.fields.CharField(max_length=25000)
     img = models.ImageField(upload_to='imgs', null=True, blank=True)
 
     content_type = models.CharField(max_length=10, choices=TypeChoices.choices)
