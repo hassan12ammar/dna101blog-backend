@@ -28,6 +28,9 @@ class ContentOut(Contentshort):
     content: str
 
 
+class NewContent(Contentshort):
+    content_type: str
+
 # Blog schema
 class BlogSchema(ContentSchema):
     pass

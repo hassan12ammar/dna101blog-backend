@@ -3,11 +3,9 @@ import os
 from typing import List
 from uuid import uuid4
 # third-party imports
-from ninja import Body, File, Router, UploadedFile
 from typing import Union
 from rest_framework import status
-from django.core.files.base import ContentFile
-
+from ninja import Body, File, Router, UploadedFile
 from dna101blog.utlize.constant import CONTENT_PER_PAGE
 # local imports
 from .models import Content
@@ -15,11 +13,41 @@ from core.schemas import MessageOut
 from core.authrztion import CustomAuth
 from dna101blog.utlize.custom_class import Error
 from dna101blog.utlize.validations import get_user_profile, normalize_email
-from .schemas import BlogIn, BlogOut, BlogShort, CourdeShort, CourseIn, CourseOut, BlogEdit, CourseEdit
+from .schemas import (BlogIn, BlogOut, BlogShort, CourdeShort, CourseIn, 
+                      CourseOut, BlogEdit, CourseEdit, NewContent)
 
 
+general_content = Router()
 blog_router = Router()
 course_router = Router()
+
+
+@general_content.get("all",
+                 response={
+                       200: List[NewContent],
+                       400: MessageOut
+                       })
+def get_all(request):
+    return Content.objects.order_by("-id")
+
+
+@general_content.get("latest/{number}",
+                 response={
+                       200: List[NewContent],
+                       400: MessageOut
+                       })
+def get_latest(request, number:int):
+    return Content.objects.order_by("-id")[:number]
+
+
+@general_content.get("/highlighted", 
+                 response={
+                       200: List[NewContent],
+                       400: MessageOut
+                       })
+def get_highlighted(request):
+    return Content.objects.filter(highlighted=True)
+
 
 @blog_router.get("/get_all_blogs/{page_number}", 
                  response={

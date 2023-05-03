@@ -11,3 +11,4 @@ DEBUG = bool(os.environ['DEBUG'])
 # general constants
 DESCRIPTION="Backend for Blog and Courses website using Django and Ninja"
 CONTENT_PER_PAGE=8
+CONTENT_DESCRIPTION = ""

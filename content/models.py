@@ -15,6 +15,7 @@ class Content(models.Model):
     description = models.fields.CharField(max_length=150)
     content = models.fields.CharField(max_length=25000)
     img = models.ImageField(upload_to='imgs', null=True, blank=True)
+    highlighted = models.BooleanField(default=False)
 
     content_type = models.CharField(max_length=10, choices=TypeChoices.choices)
 
