@@ -18,6 +18,7 @@ class TokenOut(Schema):
 
 class UserOut(Schema):
     email: EmailStr
+    name: str
 
 
 class AuthOut(Schema):
