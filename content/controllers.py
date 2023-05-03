@@ -40,13 +40,13 @@ def get_latest(request, number:int):
     return Content.objects.order_by("-id")[:number]
 
 
-@general_content.get("/highlighted", 
+@general_content.get("/highlighted/{number}", 
                  response={
                        200: List[NewContent],
                        400: MessageOut
                        })
-def get_highlighted(request):
-    return Content.objects.filter(highlighted=True).order_by("-id")
+def get_highlighted(request, number: int):
+    return Content.objects.filter(highlighted=True).order_by("-id")[:number]
 
 
 @blog_router.get("/get_all_blogs/{page_number}", 
