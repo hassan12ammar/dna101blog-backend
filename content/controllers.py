@@ -46,7 +46,7 @@ def get_latest(request, number:int):
                        400: MessageOut
                        })
 def get_highlighted(request):
-    return Content.objects.filter(highlighted=True)
+    return Content.objects.filter(highlighted=True).order_by("-id")
 
 
 @blog_router.get("/get_all_blogs/{page_number}", 
